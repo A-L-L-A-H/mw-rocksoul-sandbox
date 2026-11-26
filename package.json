@@ -1,0 +1,28 @@
+{
+  "name": "@moonwitness/rocksoul-sandbox",
+  "version": "1.0.0",
+  "description": "RockSoul Ephemeral Git Worktree Lease, Redaction, Allowlisted Exec & OTLP Sandbox Daemon",
+  "type": "module",
+  "engines": {
+    "bun": ">=1.2.0",
+    "node": ">=22.0.0"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts",
+    "./lease-manager": "./src/lease-manager.ts",
+    "./redactor": "./src/redactor.ts",
+    "./command-runner": "./src/command-runner.ts",
+    "./otel-exporter": "./src/otel-exporter.ts"
+  },
+  "scripts": {
+    "start": "bun run src/server.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "^1.2.15",
+    "typescript": "~5.7.3"
+  }
+}
