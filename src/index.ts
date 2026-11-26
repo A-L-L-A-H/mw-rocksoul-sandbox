@@ -65,3 +65,12 @@ export {
   type SandboxApplicationOptions,
   type SandboxServerConfig,
 } from './server.js';
+
+export {
+  DEFAULT_E2B_API_BASE_URL,
+  E2bExecutionDriver,
+  type E2bDriverOptions,
+  type E2bExecuteParams,
+  type E2bExecutionResult,
+  type ExecutionBackend,
+} from './e2b-driver.js';
