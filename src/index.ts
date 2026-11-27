@@ -74,3 +74,11 @@ export {
   type E2bExecutionResult,
   type ExecutionBackend,
 } from './e2b-driver.js';
+
+export {
+  QuotaGuard,
+  TWO_GIGABYTES,
+  DEFAULT_MAX_CONCURRENT_LEASES,
+  type QuotaGuardOptions,
+} from './quota_guard.js';
+
