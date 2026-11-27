@@ -63,8 +63,13 @@ export class QuotaGuard {
     if (freeBytes < this.minFreeDiskBytes) {
       throw new SandboxError(
         'CONFLICT',
-        `Disk space below watermark: ${(freeBytes / (1024 * 1024)).toFixed(1)}MB free, required ${(this.minFreeDiskBytes / (1024 * 1024)).toFixed(1)}MB (<2GB guard)`,
-        { details: { reason: 'DISK_WATERMARK_EXCEEDED' } }
+        `Disk space below watermark: ${(freeBytes / (1024 * 1024)).toFixed(1)}MB free, required ${(this.minFreeDiskBytes / (1024 * 1024)).toFixed(1)}MB (<2GB guard). Run: mw-ww-cli --audit --json`,
+        {
+          details: {
+            reason: 'DISK_WATERMARK_EXCEEDED',
+            remediation: 'mw-ww-cli --audit --json && mw-ww-cli --clean-safe --dry-run',
+          },
+        }
       );
     }
 

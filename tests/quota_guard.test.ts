@@ -37,6 +37,7 @@ describe('QuotaGuard & Stale Lease Reaper', () => {
       expect(err instanceof SandboxError).toBe(true);
       expect((err as SandboxError).code).toBe('CONFLICT');
       expect((err as SandboxError).details?.reason).toBe('DISK_WATERMARK_EXCEEDED');
+      expect(String((err as SandboxError).details?.remediation)).toContain('mw-ww-cli');
     }
   });
 
