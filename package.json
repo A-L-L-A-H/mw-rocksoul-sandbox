@@ -18,6 +18,7 @@
   "scripts": {
     "start": "bun run src/server.ts",
     "test": "bun test",
+    "check:zero-orm": "node scripts/check-zero-orm-imports.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {},
