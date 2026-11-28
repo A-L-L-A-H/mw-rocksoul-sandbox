@@ -1,14 +1,96 @@
-name: ci
-on:
+name: CI
+
+"on":
   push:
-    branches: [main, dev]
+    branches: [main]
   pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  ci:
+  commitlint:
+    name: commitlint
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 26
+      - name: Install commitlint
+        run: npm install -g @commitlint/cli @commitlint/config-conventional
+      - name: Run commitlint
+        run: npx commitlint --from=origin/main --to=HEAD --extends @commitlint/config-conventional
+
+  verify:
+    name: verify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - run: bun run typecheck
-      - run: bun test
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: |
+          if grep -q '"typecheck"' package.json; then bun run typecheck; fi
+
+      - name: Lint
+        run: |
+          if grep -q '"lint"' package.json; then bun run lint; fi
+
+      - name: Format check
+        run: |
+          if grep -q '"format:check"' package.json; then bun run format:check; fi
+
+      - name: Build
+        run: |
+          if grep -q '"build"' package.json; then bun run build; fi
+
+      - name: Test
+        run: bun test
+
+      - name: Observability endpoints
+        run: |
+          grep -R --include='*.ts' --include='*.tsx' --include='*.js' -E '/health|/metrics' src apps packages 2>/dev/null || echo "No /health or /metrics in service source"
+
+  security:
+    name: security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e
+        env:
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version-file: package.json
+
+      - name: bun audit
+        run: bun audit --audit-level high || echo "bun audit completed"

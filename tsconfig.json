@@ -13,7 +13,14 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@moonwitness/contracts": [
+        "../mw-core/packages/contracts/src/index.ts",
+        "./src/contracts/standalone-compat.ts"
+      ]
+    }
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules", "dist"]
